@@ -61,6 +61,7 @@ type GoTagger struct {
 	tagRelease     bool
 	versionPrefix  string
 	dirtyIncrement string
+	commitMapfile  string
 }
 
 // Runs GoTagger.
@@ -79,6 +80,7 @@ func (g *GoTagger) Run() int {
 	flags.BoolVar(&g.tagRelease, "release", g.boolEnv("release", false), "tag HEAD with the current version if it is a release commit")
 	flags.StringVar(&g.versionPrefix, "prefix", g.stringEnv("prefix", "v"), "set a prefix for versions")
 	flags.StringVar(&g.dirtyIncrement, "dirty", g.stringEnv("dirty", ""), "how to increment the version for a dirty checkout [minor, patch]")
+	flags.StringVar(&g.commitMapfile, "config", g.stringEnv("config", ""), "path to a custom configuration for how to increment the version based on commit type")
 
 	// profiling options
 	cpuprofile := flags.String("cpuprofile", "", "write cpu profile to file")
@@ -147,6 +149,13 @@ func (g *GoTagger) Run() int {
 	r.Config.RemoteName = g.remoteName
 	r.Config.VersionPrefix = g.versionPrefix
 	r.Config.DirtyWorktreeIncrement = g.dirtyIncrement
+	r.Config.IncrementConfigFile = g.commitMapfile
+
+	err = r.Config.ReadCommitTypeMappings()
+	if err != nil {
+		g.err.Println("error: ", err)
+		return genericErrorExitCode
+	}
 
 	versions, err := r.TagRepo()
 	if err != nil {
