@@ -3,7 +3,7 @@ module github.com/sassoftware/gotagger
 go 1.16
 
 require (
-	github.com/Masterminds/semver/v3 v3.1.0
+	github.com/Masterminds/semver/v3 v3.1.1
 	github.com/go-git/go-git/v5 v5.1.0
 	github.com/google/go-cmp v0.4.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
